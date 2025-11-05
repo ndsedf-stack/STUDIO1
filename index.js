@@ -1,10 +1,8 @@
-
-
 import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
 
 // --- DATA STRUCTURE & DATABASE ---
-const muscleGroups = ["Pectoraux", "Dos", "Quadriceps", "Ischios", "Fessiers", "Épaules", "Biceps", "Triceps", "Avant-bras"];
+const muscleGroups = ["Pectoraux", "Dos", "Quadriceps", "Ischios", "Fessiers", "Épaules", "Biceps", "Triceps", "Avant-bras", "Mollets"];
 
 const programData = {
   blocks: [
@@ -281,7 +279,7 @@ const TechniqueHighlight = ({ exercise, block }) => {
 };
 
 const SetsTracker = ({ exercise, onSetComplete, onInputChange, onAddBonusSet, block }) => {
-    const [intensificationState, setIntensificationState] = useState({ active: false, step: 0, type: null });
+    const [intensificationState, setIntensificationState] = useState({ active: false, step: 0 });
 
     const handleCheck = (set, setIndex, subExoIndex = -1) => {
         onSetComplete(!set.completed, setIndex, subExoIndex);
@@ -294,49 +292,48 @@ const SetsTracker = ({ exercise, onSetComplete, onInputChange, onAddBonusSet, bl
     const renderIntensificationGuide = (exo, subExoIndex = -1) => {
         if (!intensificationState.active || intensificationState.type !== exo.intensification || !block) return null;
         const lastSet = [...exo.sets].filter((s) => !s.isBonus).pop(); if (!lastSet) return null;
-        if (block.technique.name === 'Rest-Pause' && intensificationState.type === 'rest-pause') return React.createElement(IntensificationStep, { title: "🔥 Rest-Pause", actionText: "Ajouter la série bonus", onAction: () => { onAddBonusSet({ weight: lastSet.weight, reps: '', rir: 0 }, subExoIndex); setIntensificationState({ active: false, step: 0, type: null }); }, timer: 20 });
-        if (block.technique.name.includes('Drop-Sets') && intensificationState.type === 'drop-set') return React.createElement(IntensificationStep, { title: "🔥 Drop-Set", description: "Baissez le poids de ~25%.", actionText: "Ajouter la série Drop", onAction: () => { onAddBonusSet({ weight: (parseFloat(String(lastSet.weight)) * 0.75).toFixed(1), reps: '', rir: 0 }, subExoIndex); setIntensificationState({ active: false, step: 0, type: null }); } });
+        if (block.technique.name === 'Rest-Pause' && intensificationState.type === 'rest-pause') return React.createElement(IntensificationStep, { title: "🔥 Rest-Pause", actionText: "Ajouter la série bonus", onAction: () => { onAddBonusSet({ weight: lastSet.weight, reps: '', rir: 0 }, subExoIndex); setIntensificationState({ active: false, step: 0 }); }, timer: 20 });
+        if (block.technique.name.includes('Drop-Sets') && intensificationState.type === 'drop-set') return React.createElement(IntensificationStep, { title: "🔥 Drop-Set", description: "Baissez le poids de ~25%.", actionText: "Ajouter la série Drop", onAction: () => { onAddBonusSet({ weight: (parseFloat(String(lastSet.weight)) * 0.75).toFixed(1), reps: '', rir: 0 }, subExoIndex); setIntensificationState({ active: false, step: 0 }); } });
         return null;
     };
     
     if (exercise.type === 'superset') {
-      const numSets = exercise.exercises[0].sets.filter(s => !s.isBonus).length;
-      return React.createElement("div", { className: "sets-tracker" }, 
-        Array.from({ length: numSets }).map((_, setIndex) => (
-            React.createElement("div", { className: "superset-set-row", key: `superset-set-${setIndex}` },
-                React.createElement("div", {className: "set-number"}, setIndex + 1),
-                React.createElement("div", { className: "superset-set-exercises" },
-                    exercise.exercises.map((subExo, subExoIndex) => (
-                        React.createElement("div", { className: "superset-set-exercise-card", key: subExo.id },
-                            React.createElement("div", { className: "superset-set-exercise-name" }, subExo.name),
-                            React.createElement("div", { className: "superset-set-inputs" },
-                                React.createElement("div", { className: "set-input" },
-                                    React.createElement("label", null, "Poids"),
-                                    React.createElement("input", { type: "number", value: subExo.sets[setIndex]?.weight || '', onChange: (e) => onInputChange(e.target.value, 'weight', setIndex, subExoIndex) })
-                                ),
-                                React.createElement("div", { className: "set-input" },
-                                    React.createElement("label", null, "Reps"),
-                                    React.createElement("input", { type: "number", value: subExo.sets[setIndex]?.reps || '', onChange: (e) => onInputChange(e.target.value, 'reps', setIndex, subExoIndex) })
-                                ),
-                                React.createElement("div", { className: "set-input" },
-                                    React.createElement("label", null, "RIR"),
-                                    React.createElement("input", { type: "number", value: subExo.sets[setIndex]?.rir || '', onChange: (e) => onInputChange(e.target.value, 'rir', setIndex, subExoIndex) })
+        return React.createElement("div", { className: "sets-tracker" }, 
+            exercise.exercises[0].sets.map((_, setIndex) => (
+                React.createElement("div", { className: "superset-set-row", key: `superset-set-${setIndex}` },
+                    React.createElement("div", {className: "set-number"}, setIndex + 1),
+                    React.createElement("div", { className: "superset-set-exercises" },
+                        exercise.exercises.map((subExo, subExoIndex) => (
+                            React.createElement("div", { className: "superset-set-exercise-card", key: subExo.id },
+                                React.createElement("div", { className: "superset-set-exercise-name" }, subExo.name),
+                                React.createElement("div", { className: "superset-set-inputs" },
+                                    React.createElement("div", { className: "set-input" },
+                                        React.createElement("label", null, "Poids"),
+                                        React.createElement("input", { type: "number", value: subExo.sets[setIndex]?.weight || '', onChange: (e) => onInputChange(e.target.value, 'weight', setIndex, subExoIndex) })
+                                    ),
+                                    React.createElement("div", { className: "set-input" },
+                                        React.createElement("label", null, "Reps"),
+                                        React.createElement("input", { type: "number", value: subExo.sets[setIndex]?.reps || '', onChange: (e) => onInputChange(e.target.value, 'reps', setIndex, subExoIndex) })
+                                    ),
+                                    React.createElement("div", { className: "set-input" },
+                                        React.createElement("label", null, "RIR"),
+                                        React.createElement("input", { type: "number", value: subExo.sets[setIndex]?.rir || '', onChange: (e) => onInputChange(e.target.value, 'rir', setIndex, subExoIndex) })
+                                    )
                                 )
                             )
-                        )
-                    ))
-                ),
-                React.createElement("button", { 
-                    className: `set-check-btn ${exercise.exercises[0].sets[setIndex]?.completed ? 'completed' : ''}`, 
-                    onClick: () => {
-                        const isCompleted = !exercise.exercises[0].sets[setIndex]?.completed;
-                        onSetComplete(isCompleted, setIndex, 0); 
-                        onSetComplete(isCompleted, setIndex, 1);
-                    } 
-                }, "✓")
-            )
-        ))
-      );
+                        ))
+                    ),
+                    React.createElement("button", { 
+                        className: `set-check-btn ${exercise.exercises[0].sets[setIndex]?.completed ? 'completed' : ''}`, 
+                        onClick: () => {
+                            const isCompleted = !exercise.exercises[0].sets[setIndex]?.completed;
+                            onSetComplete(isCompleted, setIndex, 0); 
+                            onSetComplete(isCompleted, setIndex, 1);
+                        } 
+                    }, "✓")
+                )
+            ))
+        );
     }
 
     return React.createElement("div", { className: "sets-tracker-container" }, React.createElement("div", { className: "sets-tracker" }, exercise.sets.map((set, index) => React.createElement("div", { className: `set-row ${set.isBonus ? 'bonus-set' : ''}`, key: set.id }, React.createElement("div", { className: "set-number" }, set.isBonus ? '🔥' : index + 1), React.createElement("div", { className: "set-input" }, React.createElement("label", null, "Poids"), React.createElement("input", { type: "number", value: set.weight, onChange: (e) => onInputChange(e.target.value, 'weight', index) })), React.createElement("div", { className: "set-input" }, React.createElement("label", null, "Reps"), React.createElement("input", { type: "number", value: set.reps, onChange: (e) => onInputChange(e.target.value, 'reps', index) })), React.createElement("div", { className: "set-input" }, React.createElement("label", null, "RIR"), React.createElement("input", { type: "number", value: set.rir, onChange: (e) => onInputChange(e.target.value, 'rir', index) })), React.createElement("button", { className: `set-check-btn ${set.completed ? 'completed' : ''}`, onClick: () => handleCheck(set, index) }, "✓"))), renderIntensificationGuide(exercise)));
@@ -361,8 +358,18 @@ const ActiveWorkoutView = ({ workout, meta, onEndWorkout, getSuggestedWeight }) 
     const handleSetComplete = (isCompleted, setIndex, subExoIndex = -1) => {
         const newWorkoutState = JSON.parse(JSON.stringify(workoutState));
         const newExo = newWorkoutState[currentIndex];
-        const set = subExoIndex > -1 ? newExo.exercises[subExoIndex].sets[setIndex] : newExo.sets[setIndex];
-        set.completed = isCompleted;
+        
+        if (newExo.type === 'superset') {
+            newExo.exercises.forEach((subExo, sIdx) => {
+                if (subExo.sets[setIndex]) {
+                    subExo.sets[setIndex].completed = isCompleted;
+                }
+            });
+        } else {
+            const set = newExo.sets[setIndex];
+            set.completed = isCompleted;
+        }
+
         setWorkoutState(newWorkoutState);
         if (isCompleted) {
             const restDuration = newExo.rest;
@@ -384,7 +391,7 @@ const ActiveWorkoutView = ({ workout, meta, onEndWorkout, getSuggestedWeight }) 
         setWorkoutState(newWorkoutState);
     };
     return React.createElement("div", { className: "main-content" }, 
-        React.createElement("div", { className: "workout-header" }, React.createElement("span", { className: "workout-progress" }, currentIndex + 1, " / ", workoutState.length), React.createElement("button", { className: "end-workout-btn", onClick: () => onEndWorkout({ exercises: workoutState }) }, "Terminer")), 
+        React.createElement("div", { className: "workout-header" }, React.createElement("span", { className: "workout-progress" }, currentIndex + 1, " / ", workoutState.length), React.createElement("button", { className: "end-workout-btn", onClick: () => onEndWorkout({ exercises: workoutState, duration: Date.now() - meta.startTime }) }, "Terminer")), 
         React.createElement("div", { className: "current-exercise-info" }, React.createElement("h2", null, currentExercise.name || (currentExercise.exercises || []).map(e => e.name).join(' + '))), 
         React.createElement(TechniqueHighlight, { exercise: currentExercise, block: currentBlock }), 
         React.createElement(SetsTracker, { exercise: currentExercise, onSetComplete: handleSetComplete, onInputChange: handleInputChange, onAddBonusSet: handleAddBonusSet, block: currentBlock }), 
@@ -586,15 +593,15 @@ const App = () => {
   const [activeWorkout, setActiveWorkout] = useState(null);
   const { history, saveWorkout, getExercisePR, getSuggestedWeight, importHistory } = useWorkoutHistory();
   
-  const handleStartWorkout = (workout, week, day, isHomeWorkout = false) => { setActiveWorkout({ workout, meta: { week, day, isHomeWorkout }, startTime: Date.now() }); };
+  const handleStartWorkout = (workout, week, day, isHomeWorkout = false) => { setActiveWorkout({ workout, meta: { week, day, isHomeWorkout, startTime: Date.now() }}); };
   const handleEndWorkout = (completedWorkout) => {
-    if (completedWorkout) { saveWorkout({ date: new Date().toISOString(), ...activeWorkout.meta, exercises: completedWorkout.exercises }); }
+    if (completedWorkout) saveWorkout({ date: new Date().toISOString(), ...activeWorkout.meta, exercises: completedWorkout });
     setActiveWorkout(null);
   };
 
   const renderContent = () => {
     if (activeWorkout) {
-        return React.createElement(ActiveWorkoutView, { key: activeWorkout.startTime, workout: activeWorkout.workout, meta: activeWorkout.meta, onEndWorkout: handleEndWorkout, getSuggestedWeight: getSuggestedWeight });
+        return React.createElement("div", { className: "main-content" }, React.createElement(ActiveWorkoutView, { key: activeWorkout.meta.startTime, workout: activeWorkout.workout, meta: activeWorkout.meta, onEndWorkout: handleEndWorkout, getSuggestedWeight: getSuggestedWeight }));
     }
     switch (currentView) {
       case 'program':
@@ -609,7 +616,7 @@ const App = () => {
   return (
     React.createElement("div", { className: "app-container" },
       renderContent(),
-      React.createElement(BottomNav, { currentView: currentView, setView: setCurrentView })
+      !activeWorkout && React.createElement(BottomNav, { currentView: currentView, setView: setCurrentView })
     )
   );
 };
