@@ -1,7 +1,7 @@
 import React from 'react';
 import useWorkoutHistory from './hooks/useWorkoutHistory';
 
-// --- PROGRAM DATA (from your provided block, fixed syntax) ---
+// --- PROGRAM DATA (kept as in repo) ---
 const programData = {
   blocks: [
     { id: 1, name: "BLOC 1 (S1-5): FONDATION TECHNIQUE", weeks: [1, 2, 3, 4, 5], technique: { name: 'Tempo & Pauses', desc: "Tempo 3-1-2 et pauses stratégiques." }, bicepsVariant: 'Incline Curl' },
@@ -91,12 +91,18 @@ const PlusIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
 );
 
-// --- SIMPLE UI ---
-function renderExercise(ex) {
+// --- HELPERS ---
+function prettyId(id) {
+  if (!id) return '';
+  return id.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+}
+
+function renderExerciseItem(ex, keyPrefix = '') {
   if (!ex) return null;
+  const key = `${keyPrefix}-${ex.id}`;
   return (
-    <li key={ex.id}>
-      <strong>{ex.name ?? ex.id}</strong>
+    <li key={key} style={{ marginBottom: 6 }}>
+      <strong>{ex.name ?? prettyId(ex.id)}</strong>
       {' — '}
       {ex.sets ?? '-'} sets × {ex.reps ?? '-'}
       {ex.startWeight ? ` — start ${ex.startWeight}kg` : ''}
@@ -104,6 +110,7 @@ function renderExercise(ex) {
   );
 }
 
+// --- APP ---
 export default function App() {
   const { history } = useWorkoutHistory();
 
@@ -124,25 +131,46 @@ export default function App() {
 
       <section style={{ marginBottom: 18 }}>
         <h2 style={{ marginTop: 0 }}>Workouts</h2>
+
         {days.map(dayKey => {
           const w = programData.workouts[dayKey];
+          // We'll track seen exercise ids in this workout to avoid duplicates showing twice
+          const seen = new Set();
+
           return (
             <article key={dayKey} style={{ border: '1px solid #eee', padding: 12, marginBottom: 12, borderRadius: 6 }}>
-              <h3 style={{ margin: '0 0 8px 0' }}>{w.name ?? dayKey.replace(/_/g, ' ')}</h3>
+              <h3 style={{ margin: '0 0 8px 0' }}>{w.name ?? prettyId(dayKey)}</h3>
+
               {w.exercises && Array.isArray(w.exercises) ? (
                 <ul style={{ margin: 0, paddingLeft: 18 }}>
-                  {w.exercises.map(ex => {
+                  {w.exercises.map((ex) => {
+                    if (!ex) return null;
+
                     if (ex.type === 'superset') {
+                      // For supersets, render the superset header and render only sub-exercises that haven't already been shown
+                      const subItems = (ex.exercises || []).map(sub => {
+                        if (!sub || seen.has(sub.id)) return null;
+                        seen.add(sub.id);
+                        return renderExerciseItem(sub, ex.id);
+                      }).filter(Boolean);
+
+                      // If nothing remains to show (all subitems were already rendered), skip the whole superset
+                      if (subItems.length === 0) return null;
+
                       return (
-                        <li key={ex.id}>
-                          <em>Superset</em> ({ex.id}) — rest {ex.rest ?? '-'}s
-                          <ul>
-                            {ex.exercises && ex.exercises.map(e => renderExercise(e))}
+                        <li key={ex.id} style={{ marginBottom: 8 }}>
+                          <em>Superset</em> — {ex.name ?? prettyId(ex.id)} {ex.rest ? ` (rest ${ex.rest}s)` : ''}
+                          <ul style={{ marginTop: 6, paddingLeft: 14 }}>
+                            {subItems}
                           </ul>
                         </li>
                       );
                     }
-                    return renderExercise(ex);
+
+                    // Normal exercise: skip if already shown (dedupe)
+                    if (seen.has(ex.id)) return null;
+                    seen.add(ex.id);
+                    return renderExerciseItem(ex);
                   })}
                 </ul>
               ) : (
