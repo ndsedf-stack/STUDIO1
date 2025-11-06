@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import useWorkoutHistory from './hooks/useWorkoutHistory';
 import './styles.css';
 
-// programData should be the object you already have in the repo.
-// If you don't have it in a separate file, paste the full programData object here.
-const programData = (window.__PROGRAM_DATA__ || { /* fallback if you prefer to inline the object here */ });
-// NOTE: If you have the programData object in this file previously, keep it here.
+// Use programData if it's defined in the file or window (fallback)
+const programData = (typeof window !== 'undefined' && window.__PROGRAM_DATA__) || (typeof global !== 'undefined' && global.__PROGRAM_DATA__) || (typeof programData !== 'undefined' ? programData : null);
+
+// If the repo has programData inline in a different file, keep it as is.
+// If programData is null, avoid crashing by using an empty structure.
+const data = programData || { workouts: {} };
 
 function prettyId(id) {
   if (!id) return '';
@@ -48,9 +50,9 @@ function Superset({ ex }) {
 
 export default function App() {
   const { history } = useWorkoutHistory();
-  const days = Object.keys(programData.workouts || {});
+  const days = Object.keys(data.workouts || {});
 
-  // collapse state per day
+  // collapse per day (default open)
   const [openDays, setOpenDays] = useState(() => {
     const state = {};
     days.forEach(d => { state[d] = true; });
@@ -58,17 +60,11 @@ export default function App() {
   });
   const toggleDay = (d) => setOpenDays(s => ({ ...s, [d]: !s[d] }));
 
-  // Inline fallback styles in case styles.css was not loaded by the deployed bundle
-  const fallbackStyle = {
-    background: 'linear-gradient(180deg, #eef2ff 0%, #f8fafc 100%)',
-    minHeight: '100vh',
-    padding: 28,
-    fontFamily: 'Inter, Arial, sans-serif',
-    color: '#0f172a',
-  };
+  // small local nav state (visual only)
+  const [activeTab, setActiveTab] = useState('Workouts');
 
   return (
-    <div className="app" style={fallbackStyle}>
+    <div className="app">
       <header className="app-header">
         <div className="brand">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" style={{ color:'#2563eb' }}>
@@ -76,18 +72,32 @@ export default function App() {
           </svg>
           <h1>Hybrid Master — Prototype</h1>
         </div>
-        <div className="header-actions">
-          <button title="Stats" className="toggle-btn">Stats</button>
-          <button title="New" className="toggle-btn">New</button>
+
+        <div className="header-right">
+          <nav className="top-nav" aria-label="Top navigation">
+            <button className={activeTab === 'Stats' ? 'active' : ''} onClick={() => setActiveTab('Stats')}>Stats</button>
+            <button className={activeTab === 'New' ? 'active' : ''} onClick={() => setActiveTab('New')}>New</button>
+            <button className={activeTab === 'Workouts' ? 'active' : ''} onClick={() => setActiveTab('Workouts')}>Workouts</button>
+          </nav>
         </div>
       </header>
 
       <section className="section">
-        <h2 style={{ marginTop: 0 }}>Workouts</h2>
+        <div className="section-header">
+          <h2>Workouts</h2>
+          <div className="meta" style={{ fontSize: 13 }}>{days.length} days</div>
+        </div>
 
         <div className="cards">
+          {days.length === 0 && (
+            <div className="card">
+              <div style={{ fontWeight:700 }}>No workouts configured</div>
+              <div className="meta">Add your program data to programData.workouts</div>
+            </div>
+          )}
+
           {days.map(dayKey => {
-            const w = programData.workouts[dayKey];
+            const w = data.workouts[dayKey];
             if (!w) return null;
             const seen = new Set();
             return (
