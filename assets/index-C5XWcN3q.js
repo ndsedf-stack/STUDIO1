@@ -7122,7 +7122,7 @@ function Superset({ ex }) {
 }
 function App() {
   const { history } = useWorkoutHistory();
-  const days = Object.keys(programData.workouts || {});
+  const days = Object.keys(programData && programData.workouts ? programData.workouts : {});
   const [openDays, setOpenDays] = reactExports.useState(() => {
     const state = {};
     days.forEach((d) => {
@@ -7194,4 +7194,4 @@ const container = document.getElementById("root");
 if (container) {
   createRoot(container).render(/* @__PURE__ */ jsxRuntimeExports.jsx(App, {}));
 }
-//# sourceMappingURL=index-BpkYv2tO.js.map
+//# sourceMappingURL=index-C5XWcN3q.js.map
