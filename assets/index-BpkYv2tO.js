@@ -7032,8 +7032,62 @@ function useWorkoutHistory() {
   }, []);
   return { history, addEntry, removeEntry };
 }
-const programData = typeof window !== "undefined" && window.__PROGRAM_DATA__ || typeof global !== "undefined" && global.__PROGRAM_DATA__ || (typeof programData !== "undefined" ? programData : null);
-const data = programData || { workouts: {} };
+const programData = {
+  workouts: {
+    dimanche: {
+      name: "Dos + Jambes Lourdes + Bras",
+      exercises: [
+        { id: "tbdl", name: "Trap Bar Deadlift", sets: 5, reps: "6-8", rir: 2, rest: 120, startWeight: 75, progression: { increment: 5 }, intensification: "rest-pause", muscles: { primary: ["Dos", "Fessiers", "Ischios"], secondary: ["Quadriceps"] } },
+        { id: "goblet", name: "Goblet Squat", sets: 4, reps: "10", rir: 2, rest: 75, startWeight: 25, progression: { increment: 2.5 }, intensification: "drop-set", muscles: { primary: ["Quadriceps", "Fessiers"], secondary: ["Ischios"] } },
+        { id: "legpress", name: "Leg Press", sets: 4, reps: "10", rir: 2, rest: 75, startWeight: 110, progression: { increment: 10 }, intensification: "cluster", muscles: { primary: ["Quadriceps", "Fessiers"], secondary: ["Ischios"] } },
+        { type: "superset", id: "superset_dos_pecs", rest: 90, exercises: [
+          { id: "latpull", name: "Lat Pulldown (large)", sets: 4, reps: "10", rir: 2, startWeight: 60, progression: { increment: 2.5 }, intensification: "drop-set", muscles: { primary: ["Dos"], secondary: ["Biceps"] } },
+          { id: "landminepress", name: "Landmine Press", sets: 4, reps: "10", rir: 2, startWeight: 35, progression: { increment: 2.5 }, muscles: { primary: ["Pectoraux", "Épaules"], secondary: ["Triceps"] } }
+        ] },
+        { id: "rowmachine", name: "Rowing Machine (large)", sets: 4, reps: "10", rir: 2, rest: 75, startWeight: 50, progression: { increment: 2.5 }, intensification: "myo-reps", muscles: { primary: ["Dos"], secondary: ["Biceps", "Épaules"] } },
+        { type: "superset", id: "superset_bras_dim", rest: 75, exercises: [
+          { id: "biceps_dim", name: "Spider Curl / Incline Curl", sets: 4, reps: "12", rir: 1, startWeight: 12, progression: { increment: 2.5 }, bicepsRotation: true, intensification: "myo-reps", muscles: { primary: ["Biceps"], secondary: [] } },
+          { id: "pushdown", name: "Cable Pushdown", sets: 3, reps: "12", rir: 1, startWeight: 20, progression: { increment: 2.5 }, muscles: { primary: ["Triceps"], secondary: [] } }
+        ] }
+      ]
+    },
+    mardi: {
+      name: "Pecs + Épaules + Triceps",
+      exercises: [
+        { id: "dbpress", name: "Dumbbell Press", sets: 5, reps: "10", rir: 2, rest: 105, startWeight: 22, progression: { increment: 2.5 }, intensification: "rest-pause", muscles: { primary: ["Pectoraux"], secondary: ["Épaules", "Triceps"] } },
+        { id: "cablefly", name: "Cable Fly", sets: 4, reps: "12", rir: 1, rest: 60, startWeight: 10, progression: { increment: 2.5 }, intensification: "drop-set", muscles: { primary: ["Pectoraux"], secondary: [] } },
+        { id: "legpresslight", name: "Leg Press léger", sets: 3, reps: "15", rir: 2, rest: 60, startWeight: 80, progression: { increment: 10 }, muscles: { primary: ["Quadriceps", "Fessiers"], secondary: [] } },
+        { type: "superset", id: "superset_tri_epaules", rest: 75, exercises: [
+          { id: "tricepsext", name: "Extension Triceps Corde", sets: 5, reps: "12", rir: 1, startWeight: 20, progression: { increment: 2.5 }, intensification: "drop-set", muscles: { primary: ["Triceps"], secondary: [] } },
+          { id: "latraises", name: "Lateral Raises", sets: 5, reps: "15", rir: 1, startWeight: 8, progression: { increment: 2.5 }, intensification: "myo-reps", muscles: { primary: ["Épaules"], secondary: [] } }
+        ] },
+        { id: "facepull", name: "Face Pull", sets: 5, reps: "15", rir: 2, rest: 60, startWeight: 20, progression: { increment: 2.5 }, intensification: "myo-reps", muscles: { primary: ["Épaules", "Dos"], secondary: [] } },
+        { id: "rowmachineserre", name: "Rowing Machine (serrée)", sets: 4, reps: "12", rir: 2, rest: 75, startWeight: 50, progression: { increment: 2.5 }, muscles: { primary: ["Dos"], secondary: ["Biceps"] } },
+        { id: "overheadext", name: "Overhead Extension", sets: 4, reps: "12", rir: 1, rest: 60, startWeight: 15, progression: { increment: 2.5 }, intensification: "myo-reps", muscles: { primary: ["Triceps"], secondary: [] } }
+      ]
+    },
+    vendredi: {
+      name: "Dos + Jambes Légères + Bras + Épaules",
+      exercises: [
+        { id: "landminerow", name: "Landmine Row", sets: 5, reps: "10", rir: 2, rest: 105, startWeight: 55, progression: { increment: 2.5 }, intensification: "rest-pause", muscles: { primary: ["Dos"], secondary: ["Biceps"] } },
+        { type: "superset", id: "superset_jambes_ven", rest: 75, exercises: [
+          { id: "legcurl", name: "Leg Curl", sets: 5, reps: "12", rir: 1, startWeight: 40, progression: { increment: 5 }, intensification: "partials", muscles: { primary: ["Ischios"], secondary: [] } },
+          { id: "legext", name: "Leg Extension", sets: 4, reps: "15", rir: 1, startWeight: 35, progression: { increment: 5 }, intensification: "partials", muscles: { primary: ["Quadriceps"], secondary: [] } }
+        ] },
+        { type: "superset", id: "superset_pecs_ven", rest: 60, exercises: [
+          { id: "cablefly_ven", name: "Cable Fly", sets: 4, reps: "15", rir: 1, startWeight: 10, progression: { increment: 2.5 }, intensification: "myo-reps", muscles: { primary: ["Pectoraux"], secondary: [] } },
+          { id: "dbfly", name: "Dumbbell Fly", sets: 4, reps: "12", rir: 1, startWeight: 10, progression: { increment: 2.5 }, intensification: "drop-set", muscles: { primary: ["Pectoraux"], secondary: [] } }
+        ] },
+        { type: "superset", id: "superset_bras_ven", rest: 75, exercises: [
+          { id: "ezcurl", name: "EZ Bar Curl", sets: 5, reps: "12", rir: 1, startWeight: 25, progression: { increment: 2.5 }, intensification: "myo-reps", muscles: { primary: ["Biceps"], secondary: [] } },
+          { id: "overheadext_ven", name: "Overhead Extension", sets: 3, reps: "12", rir: 1, startWeight: 15, progression: { increment: 2.5 }, intensification: "myo-reps", muscles: { primary: ["Triceps"], secondary: [] } }
+        ] },
+        { id: "latraises_ven", name: "Lateral Raises", sets: 3, reps: "15", rir: 1, rest: 60, startWeight: 8, progression: { increment: 2.5 }, intensification: "myo-reps", muscles: { primary: ["Épaules"], secondary: [] } },
+        { id: "wristcurl", name: "Wrist Curl", sets: 3, reps: "20", rir: 0, rest: 45, startWeight: 30, progression: { increment: 2.5 }, muscles: { primary: ["Avant-bras"], secondary: [] } }
+      ]
+    }
+  }
+};
 function prettyId(id2) {
   if (!id2) return "";
   return id2.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
@@ -7068,7 +7122,7 @@ function Superset({ ex }) {
 }
 function App() {
   const { history } = useWorkoutHistory();
-  const days = Object.keys(data.workouts || {});
+  const days = Object.keys(programData.workouts || {});
   const [openDays, setOpenDays] = reactExports.useState(() => {
     const state = {};
     days.forEach((d) => {
@@ -7077,7 +7131,6 @@ function App() {
     return state;
   });
   const toggleDay = (d) => setOpenDays((s) => ({ ...s, [d]: !s[d] }));
-  const [activeTab, setActiveTab] = reactExports.useState("Workouts");
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "app", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsxs("header", { className: "app-header", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "brand", children: [
@@ -7085,9 +7138,9 @@ function App() {
         /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { children: "Hybrid Master — Prototype" })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "header-right", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("nav", { className: "top-nav", "aria-label": "Top navigation", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: activeTab === "Stats" ? "active" : "", onClick: () => setActiveTab("Stats"), children: "Stats" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: activeTab === "New" ? "active" : "", onClick: () => setActiveTab("New"), children: "New" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: activeTab === "Workouts" ? "active" : "", onClick: () => setActiveTab("Workouts"), children: "Workouts" })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { children: "Stats" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { children: "New" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "active", children: "Workouts" })
       ] }) })
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { className: "section", children: [
@@ -7104,7 +7157,7 @@ function App() {
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "meta", children: "Add your program data to programData.workouts" })
         ] }),
         days.map((dayKey) => {
-          const w2 = data.workouts[dayKey];
+          const w2 = programData.workouts[dayKey];
           if (!w2) return null;
           const seen = /* @__PURE__ */ new Set();
           return /* @__PURE__ */ jsxRuntimeExports.jsxs("article", { className: "card", children: [
@@ -7141,4 +7194,4 @@ const container = document.getElementById("root");
 if (container) {
   createRoot(container).render(/* @__PURE__ */ jsxRuntimeExports.jsx(App, {}));
 }
-//# sourceMappingURL=index-uD3IOhNQ.js.map
+//# sourceMappingURL=index-BpkYv2tO.js.map
