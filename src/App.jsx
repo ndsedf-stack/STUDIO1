@@ -2,12 +2,10 @@ import React, { useState } from 'react';
 import useWorkoutHistory from './hooks/useWorkoutHistory';
 import './styles.css';
 
-// keep programData as in repo (assumed present)
-import { programData } from './programDataFallback'; // see note below
-
-// If you don't have programData exported separately, you can instead
-// paste the programData object here directly. For brevity I assume it's available.
-// Alternatively, replace the import above with the programData object inline.
+// programData should be the object you already have in the repo.
+// If you don't have it in a separate file, paste the full programData object here.
+const programData = (window.__PROGRAM_DATA__ || { /* fallback if you prefer to inline the object here */ });
+// NOTE: If you have the programData object in this file previously, keep it here.
 
 function prettyId(id) {
   if (!id) return '';
@@ -35,8 +33,7 @@ function Superset({ ex }) {
         <div>
           <strong>Superset</strong> — {ex.name ?? prettyId(ex.id)} {ex.rest ? ` (rest ${ex.rest}s)` : ''}
         </div>
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          <span className="superset-badge">Superset</span>
+        <div>
           <button className="toggle-btn" onClick={() => setOpen(o => !o)}>{open ? 'Hide' : 'Show'}</button>
         </div>
       </div>
@@ -53,17 +50,25 @@ export default function App() {
   const { history } = useWorkoutHistory();
   const days = Object.keys(programData.workouts || {});
 
-  // track collapse per day
+  // collapse state per day
   const [openDays, setOpenDays] = useState(() => {
     const state = {};
     days.forEach(d => { state[d] = true; });
     return state;
   });
-
   const toggleDay = (d) => setOpenDays(s => ({ ...s, [d]: !s[d] }));
 
+  // Inline fallback styles in case styles.css was not loaded by the deployed bundle
+  const fallbackStyle = {
+    background: 'linear-gradient(180deg, #eef2ff 0%, #f8fafc 100%)',
+    minHeight: '100vh',
+    padding: 28,
+    fontFamily: 'Inter, Arial, sans-serif',
+    color: '#0f172a',
+  };
+
   return (
-    <div className="app">
+    <div className="app" style={fallbackStyle}>
       <header className="app-header">
         <div className="brand">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" style={{ color:'#2563eb' }}>
@@ -84,7 +89,6 @@ export default function App() {
           {days.map(dayKey => {
             const w = programData.workouts[dayKey];
             if (!w) return null;
-            // dedupe by id per card
             const seen = new Set();
             return (
               <article key={dayKey} className="card">
@@ -105,7 +109,6 @@ export default function App() {
                         {w.exercises.map((ex) => {
                           if (!ex) return null;
                           if (ex.type === 'superset') {
-                            // render superset but don't duplicate sub-items if they appear elsewhere
                             return <li key={ex.id}><Superset ex={ex} /></li>;
                           }
                           if (seen.has(ex.id)) return null;
