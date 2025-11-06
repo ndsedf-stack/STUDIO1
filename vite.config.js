@@ -6,5 +6,9 @@ export default defineConfig({
   base: '/STUDIO1/', // nécessaire pour GitHub Pages
   server: {
     port: 5173
+  },
+  build: {
+    sourcemap: true,   // <-- génère sourcemaps pour debug
+    minify: false      // <-- désactive la minification pour obtenir du code lisible
   }
 });
