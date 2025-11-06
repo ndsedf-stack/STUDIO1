@@ -1,4 +1,4 @@
-// programData extrait dans un module séparé pour éviter TDZ / cycles d'import
+// programData extracted into a separate module to avoid TDZ / import cycles
 const programData = {
   blocks: [
     { id: 1, name: "BLOC 1 (S1-5): FONDATION TECHNIQUE", weeks: [1, 2, 3, 4, 5], technique: { name: 'Tempo & Pauses', desc: "Tempo 3-1-2 et pauses stratégiques." }, bicepsVariant: 'Incline Curl' },
