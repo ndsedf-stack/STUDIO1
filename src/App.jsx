@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import useWorkoutHistory from './hooks/useWorkoutHistory';
 import './styles.css';
-import programData from './data/programData'; // import sécurisé depuis module dédié
+import programData from './data/programData';
 
+// --- UI helpers & components (restored from previous UI) ---
 function prettyId(id) {
   if (!id) return '';
   return id.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
@@ -34,13 +35,14 @@ function Superset({ ex }) {
         </div>
       </div>
       {open && (
-        <ul style={{ margin: 0, paddingLeft: 16 }}>
-          {ex.exercises && ex.exercises.map((s) => <ExerciseItem key={s.id} ex={s} />)}
-        </ul>
+        <ul style={{ margin: 0, paddingLeft: 16 }}>{ex.exercises && ex.exercises.map((s) => <ExerciseItem key={s.id} ex={s} />)}</ul>
       )}
     </div>
   );
 }
+
+// Placeholder for Stats/ActiveWorkoutView/SetsTracker if present in previous UI
+// If there were separate components in previous App.jsx they will be re-integrated here.
 
 export default function App() {
   const { history } = useWorkoutHistory();
@@ -114,7 +116,7 @@ export default function App() {
                           if (seen.has(ex.id)) return null;
                           seen.add(ex.id);
                           return <ExerciseItem key={ex.id} ex={ex} />;
-                        })}
+                        })};
                       </ul>
                     ) : (
                       <div>No exercises</div>
