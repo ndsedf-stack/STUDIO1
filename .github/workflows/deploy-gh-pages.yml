@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages
+name: Deploy to GitHub Pages (alternative)
 
 on:
   push:
@@ -34,34 +34,10 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Configure GitHub Pages
-        uses: actions/configure-pages@v4
-
-      - name: Archive artifact (Linux)
-        if: runner.os == 'Linux'
-        run: |
-          chmod -c -R +rX ./dist | while read line; do echo "::warning title=Invalid file permissions automatically fixed::$line"; done
-          tar --dereference --hard-dereference --directory "./dist" -cvf "$RUNNER_TEMP/artifact.tar" --exclude=.git --exclude=.github .
-
-      - name: Archive artifact (macOS)
-        if: runner.os == 'macOS'
-        run: |
-          chmod -v -R +rX ./dist | while read line; do echo "::warning title=Invalid file permissions automatically fixed::$line"; done
-          gtar --dereference --hard-dereference --directory "./dist" -cvf "$RUNNER_TEMP/artifact.tar" --exclude=.git --exclude=.github .
-
-      - name: Archive artifact (Windows)
-        if: runner.os == 'Windows'
-        shell: bash
-        run: |
-          tar --dereference --hard-dereference --directory "./dist" -cvf "$RUNNER_TEMP/artifact.tar" --exclude=.git --exclude=.github --force-local "."
-
-      - name: Upload artifact for Pages (using upload-artifact@v4)
-        uses: actions/upload-artifact@v4
+      - name: Upload artifact for Pages
+        uses: actions/upload-pages-artifact@v1
         with:
-          name: github-pages
-          path: ${{ runner.temp }}/artifact.tar
-          retention-days: 1
-          if-no-files-found: error
+          path: ./dist
 
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v1
