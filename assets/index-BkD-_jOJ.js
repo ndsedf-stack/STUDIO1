@@ -7168,15 +7168,18 @@ function App() {
               ] }),
               /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "toggle-btn", onClick: () => toggleDay(dayKey), children: openDays[dayKey] ? "Collapse" : "Expand" }) })
             ] }),
-            openDays[dayKey] && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { marginTop: 10 }, children: w2.exercises && Array.isArray(w2.exercises) ? /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "exercise-list", children: w2.exercises.map((ex) => {
-              if (!ex) return null;
-              if (ex.type === "superset") {
-                return /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(Superset, { ex }) }, ex.id);
-              }
-              if (seen.has(ex.id)) return null;
-              seen.add(ex.id);
-              return /* @__PURE__ */ jsxRuntimeExports.jsx(ExerciseItem, { ex }, ex.id);
-            }) }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: "No exercises" }) })
+            openDays[dayKey] && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { marginTop: 10 }, children: w2.exercises && Array.isArray(w2.exercises) ? /* @__PURE__ */ jsxRuntimeExports.jsxs("ul", { className: "exercise-list", children: [
+              w2.exercises.map((ex) => {
+                if (!ex) return null;
+                if (ex.type === "superset") {
+                  return /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(Superset, { ex }) }, ex.id);
+                }
+                if (seen.has(ex.id)) return null;
+                seen.add(ex.id);
+                return /* @__PURE__ */ jsxRuntimeExports.jsx(ExerciseItem, { ex }, ex.id);
+              }),
+              ";"
+            ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: "No exercises" }) })
           ] }, dayKey);
         })
       ] })
@@ -7194,4 +7197,4 @@ const container = document.getElementById("root");
 if (container) {
   createRoot(container).render(/* @__PURE__ */ jsxRuntimeExports.jsx(App, {}));
 }
-//# sourceMappingURL=index-C5XWcN3q.js.map
+//# sourceMappingURL=index-BkD-_jOJ.js.map
